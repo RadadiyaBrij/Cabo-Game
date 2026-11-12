@@ -297,6 +297,8 @@ function handleMatch(room, p, m) {
     return 'CABO player cards are locked and can only match in the final window';
   } else if (!inFinal && f.owner.id === room.caller) {
     return "The CABO player's cards are locked from interference";
+  } else if (inFinal && !isCaller && f.owner.id === room.caller) {
+    return "The CABO player's cards are locked from interference";
   }
 
   if (room.opp.state === 'claimed') {
