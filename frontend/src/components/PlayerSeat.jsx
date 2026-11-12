@@ -81,6 +81,9 @@ export default function PlayerSeat({
     }
     return { card, idx, slot };
   });
+  const occupiedBaseSlots = new Set(positionedCards
+    .filter(({ slot }) => slot >= 0 && slot < 4)
+    .map(({ slot }) => slot));
 
   const seatRef = useRef(null);
 
@@ -193,6 +196,14 @@ export default function PlayerSeat({
 
       {/* One fixed two-column grid for regular and penalty cards. */}
       <div className="seat-hand-grid">
+        {[0, 1, 2, 3].filter((slot) => !occupiedBaseSlots.has(slot)).map((slot) => (
+          <div
+            key={`empty-slot-${slot}`}
+            className={`seat-card-empty-slot ${isMe ? 'big' : ''}`}
+            aria-hidden="true"
+            style={{ gridColumn: (slot % 2) + 1, gridRow: Math.floor(slot / 2) + 1 }}
+          />
+        ))}
         {positionedCards.map(({ card, idx, slot }) => renderCard(card, idx, slot))}
       </div>
 

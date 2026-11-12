@@ -883,6 +883,22 @@ button, input, select, textarea {
   align-items: start;
 }
 
+.seat-card-empty-slot {
+  width: 48px;
+  height: 68px;
+  box-sizing: border-box;
+  border: 1px dashed rgba(255, 255, 255, 0.32);
+  border-radius: 6px;
+  background: rgba(15, 23, 42, 0.12);
+  pointer-events: none;
+}
+
+.seat-card-empty-slot.big {
+  width: 60px;
+  height: 85px;
+  border-radius: 7px;
+}
+
 .penalty-card-mark {
   position: absolute;
   top: 3px;
