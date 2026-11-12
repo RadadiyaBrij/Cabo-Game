@@ -240,8 +240,11 @@ export default function ActionBar({
         {pw === 'jack' && (
           <div>
             <div className="say" style={{ fontSize: '14px', marginBottom: '8px' }}>
-              → <strong style={{ color: '#38bdf8' }}>Blue = your cards</strong>, <strong style={{ color: '#f472b6' }}>Pink = opponent cards</strong>.
-              Select one of yours ({selectedCards.own ? '✓' : '○'}) and one of theirs ({selectedCards.other ? '✓' : '○'}) to blind-swap, or drag one onto the other.
+              → <strong style={{ color: '#38bdf8' }}>Your card</strong> ({selectedCards.own ? <span style={{ color: '#ef4444', fontWeight: 800 }}>✓ Floating Red</span> : 'Click 1'}) &amp;{' '}
+              <strong style={{ color: '#f472b6' }}>Opponent card</strong> ({selectedCards.other ? <span style={{ color: '#ef4444', fontWeight: 800 }}>✓ Floating Red</span> : 'Click 1'}).
+              <span style={{ display: 'block', fontSize: '12px', opacity: 0.85, marginTop: '2px' }}>
+                💡 Click another card anytime to change selection before swapping.
+              </span>
             </div>
             {selectedCards.own && selectedCards.other && (
               <button
@@ -287,8 +290,11 @@ export default function ActionBar({
             {st === 0 ? (
               <div>
                 <div className="say" style={{ fontSize: '14px', marginBottom: '8px' }}>
-                  → <strong style={{ color: '#a78bfa' }}>Purple = your cards</strong>, <strong style={{ color: '#fb923c' }}>Orange = opponent cards</strong>.
-                  Select one of each ({selectedCards.own ? '✓' : '○'} own, {selectedCards.other ? '✓' : '○'} other) to peek at both.
+                  → <strong style={{ color: '#a78bfa' }}>Your card</strong> ({selectedCards.own ? <span style={{ color: '#ef4444', fontWeight: 800 }}>✓ Floating Red</span> : 'Click 1'}) &amp;{' '}
+                  <strong style={{ color: '#fb923c' }}>Opponent card</strong> ({selectedCards.other ? <span style={{ color: '#ef4444', fontWeight: 800 }}>✓ Floating Red</span> : 'Click 1'}).
+                  <span style={{ display: 'block', fontSize: '12px', opacity: 0.85, marginTop: '2px' }}>
+                    💡 Click another card anytime to change selection before peeking.
+                  </span>
                 </div>
                 {selectedCards.own && selectedCards.other && (
                   <button

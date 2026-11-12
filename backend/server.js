@@ -307,7 +307,9 @@ function handleMatch(room, p, m) {
     animBroadcast(room, { type: 'fumble', actorId: p.id, actorName: p.name, targetId: f.owner.id, cardIdx: f.idx });
     return null;
   }
-  if (f.card.value !== room.opp.value) {
+  // All Kings match each other, even though red and black Kings score differently.
+  const kingMatchesKing = f.card.rank === 'K' && (room.opp.value === -1 || room.opp.value === 13);
+  if (f.card.value !== room.opp.value && !kingMatchesKing) {
     penalty(room, p, `fumbled! Tried to match with ${f.owner.id === p.id ? 'their' : f.owner.name + "'s"} ${cname(f.card)} (value: ${f.card.value}), but needed value ${room.opp.value}`);
     animBroadcast(room, { type: 'fumble', actorId: p.id, actorName: p.name, targetId: f.owner.id, cardIdx: f.idx });
     return null;

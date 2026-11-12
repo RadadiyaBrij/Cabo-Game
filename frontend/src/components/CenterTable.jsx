@@ -19,27 +19,12 @@ export default function CenterTable({
     <div style={{ margin: '14px 0' }}>
       {/* CABO Notification Banner */}
       {caboCallerName && (
-        <div
-          style={{
-            background: 'linear-gradient(90deg, #991b1b, #7f1d1d)',
-            border: '1px solid #f87171',
-            borderRadius: '12px',
-            padding: '10px 16px',
-            textAlign: 'center',
-            fontWeight: 800,
-            fontSize: '14px',
-            boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)',
-            marginBottom: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-          }}
-        >
-          <span>🚨 CABO CALLED by {caboCallerName}!</span>
-          <span style={{ fontWeight: 400, opacity: 0.9 }}>
-            Their cards are locked. Each other player gets one final turn!
-          </span>
+        <div className="table-center-cabo-banner" style={{ margin: '0 auto 10px' }}>
+          <div className="cabo-banner-badge">🚨 CABO CALLED</div>
+          <div className="cabo-banner-main">
+            <span className="cabo-caller-name">{caboCallerName.toUpperCase()}</span>
+            <span className="cabo-banner-desc">CALLED CABO · CARDS LOCKED · FINAL ROUND</span>
+          </div>
         </div>
       )}
 

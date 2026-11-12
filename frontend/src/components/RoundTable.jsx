@@ -263,8 +263,11 @@ export default function RoundTable({
             {/* CABO Notification Banner in center */}
             {caboCaller && (
               <div className="table-center-cabo-banner">
-                <span>🚨 CABO CALLED BY {caboCaller.name.toUpperCase()}!</span>
-                <span className="cabo-sub">Their cards are locked. 1 final turn!</span>
+                <div className="cabo-banner-badge">🚨 CABO CALLED</div>
+                <div className="cabo-banner-main">
+                  <span className="cabo-caller-name">{caboCaller.name.toUpperCase()}</span>
+                  <span className="cabo-banner-desc">CALLED CABO · CARDS LOCKED · FINAL ROUND</span>
+                </div>
               </div>
             )}
 

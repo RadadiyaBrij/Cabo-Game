@@ -326,12 +326,13 @@ export default function App() {
       const isTargetCabo = ownerId === roomState.caller;
 
       if (t.power === 'jack') {
-        if (isTargetCabo) {
+        if (isTargetCabo && !mine) {
           showToast("The CABO player's cards are locked from swapping");
           return;
         }
         const slot = mine ? 'own' : 'other';
         setSelectedCards((s) => ({ ...s, [slot]: s[slot] === cardId ? null : cardId }));
+        sounds.card();
         return;
       }
 
@@ -352,7 +353,7 @@ export default function App() {
           if (!mine) handleAct('power', { other: cardId });
           else showToast("Pick an opponent's card to peek at");
         } else {
-          if (isTargetCabo) {
+          if (isTargetCabo && !mine) {
             showToast("The CABO player's cards are locked from swapping");
             return;
           }
@@ -364,8 +365,13 @@ export default function App() {
 
       if (t.power === 'king') {
         if (t.stage === 0) {
+          if (isTargetCabo && !mine) {
+            showToast("The CABO player's cards are locked from swapping");
+            return;
+          }
           const slot = mine ? 'own' : 'other';
           setSelectedCards((s) => ({ ...s, [slot]: s[slot] === cardId ? null : cardId }));
+          sounds.card();
         }
         return;
       }
@@ -476,10 +482,22 @@ export default function App() {
     heldCard = roomState.turn.drawn;
     heldLabel = '🎴 Drawn Card';
   } else {
-    const peekCardId = Object.keys(peekUntil).find(
+    const activePeekIds = Object.keys(peekUntil).filter(
       (cid) => (peekUntil[cid] || 0) > now && knownCards[cid]
     );
-    if (peekCardId && !isReplacing) {
+    if (activePeekIds.length > 1 && !isReplacing) {
+      heldCards = activePeekIds.map((cid) => knownCards[cid]);
+      heldLabel = '👑 KING PEEK (BOTH CARDS)';
+      heldSeconds = Math.max(0, Math.ceil((Math.max(...activePeekIds.map((cid) => peekUntil[cid] || 0)) - now) / 1000));
+      onPutDownHeld = () => {
+        setPeekUntil((p) => {
+          const next = { ...p };
+          activePeekIds.forEach((cid) => { next[cid] = 0; });
+          return next;
+        });
+      };
+    } else if (activePeekIds.length === 1 && !isReplacing) {
+      const peekCardId = activePeekIds[0];
       heldCard = knownCards[peekCardId];
       heldLabel = '👀 Secret Peek';
       heldSeconds = Math.max(0, Math.ceil(((peekUntil[peekCardId] || 0) - now) / 1000));

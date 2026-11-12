@@ -70,7 +70,7 @@ export default function Card({
     .filter(Boolean)
     .join(' ');
 
-  const extraStyle = pt
+  const extraStyle = pt && !isSelected
     ? {
         outline: pt.outline,
         outlineOffset: '2px',
@@ -126,8 +126,15 @@ export default function Card({
         </div>
       )}
 
+      {/* Selected Floating Red Badge */}
+      {isSelected && (
+        <div className="card-selected-badge">
+          ✓ SELECTED
+        </div>
+      )}
+
       {/* Power Target Interactive Badge */}
-      {pt && !highlightLabel && (
+      {pt && !highlightLabel && !isSelected && (
         <div
           className="card-target-badge"
           style={{ background: pt.labelBg }}
