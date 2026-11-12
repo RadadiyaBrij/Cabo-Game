@@ -293,12 +293,9 @@ function handleMatch(room, p, m) {
   const isCaller = room.caller === p.id;
   const inFinal = room.turn && room.turn.phase === 'final';
 
-  if (inFinal) {
-    if (!isCaller) return 'Only the CABO player has the final matching opportunity';
-    if (f.owner.id !== p.id) return 'You can only discard your own cards in the final window';
-  } else if (isCaller) {
+  if (!inFinal && isCaller) {
     return 'CABO player cards are locked and can only match in the final window';
-  } else if (f.owner.id === room.caller) {
+  } else if (!inFinal && f.owner.id === room.caller) {
     return "The CABO player's cards are locked from interference";
   }
 
