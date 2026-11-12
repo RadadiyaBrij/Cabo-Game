@@ -7,7 +7,7 @@ import ActionBar from './components/ActionBar';
 import RulesModal from './components/RulesModal';
 import ResultsModal from './components/ResultsModal';
 import { sounds } from './utils/audio';
-import { BookOpen, Volume2, VolumeX, LogOut, ChevronDown, ChevronUp, Zap, X } from 'lucide-react';
+import { BookOpen, Volume2, VolumeX, LogOut, ChevronDown, ChevronUp, Zap, X, ArrowRight } from 'lucide-react';
 
 const DEFAULT_SERVER =
   import.meta.env.VITE_BACKEND_URL ||
@@ -559,6 +559,11 @@ export default function App() {
           <button className="btn-ghost" onClick={toggleSound} title="Sound">
             {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
+          {roomState.phase === 'over' && roomState.hostId === roomState.you && (
+            <button className="btn-primary" onClick={handleNextRound} title="Start the next round">
+              Next Round <ArrowRight size={16} />
+            </button>
+          )}
           <button className="btn-ghost" onClick={handleLeaveRoom} title="Leave Game">
             <LogOut size={16} /> Leave
           </button>
