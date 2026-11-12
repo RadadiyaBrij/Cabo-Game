@@ -23,8 +23,6 @@ cabo-game/
 ├── backend/              # Authoritative game engine & WebSockets (Deploy to Render / Railway / VPS)
 │   ├── server.js         # Full authoritative rules engine & room management
 │   ├── test-cabo.js      # Automated unit test suite
-│   ├── Dockerfile        # Container deployment
-│   ├── .dockerignore
 │   └── package.json
 │
 ├── package.json          # Root scripts to orchestrate frontend & backend
@@ -96,19 +94,20 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## 🌐 Deploy Frontend to Vercel
 
-The `frontend/` directory is built with **React + Vite** and is pre-configured with [`vercel.json`](vercel.json):
+The `frontend/` directory is built with **React + Vite**. The repository root has a Vercel configuration that builds it from the monorepo.
 
 1. Push your repository to **GitHub**.
 2. Go to [Vercel.com](https://vercel.com) and click **Add New Project**.
 3. Select this GitHub repository.
-4. Vercel automatically detects the configuration:
+4. In Project Settings, set **Root Directory** to the repository root (leave “Include files outside the root directory” enabled if shown). This uses the root `vercel.json`.
+5. Use these build settings if Vercel asks for them:
    - **Framework Preset**: `Vite`
    - **Build Command**: `npm --prefix frontend run build`
    - **Output Directory**: `frontend/dist`
-5. In **Environment Variables**, add:
+6. In **Environment Variables**, add:
    - **Name**: `VITE_BACKEND_URL`
    - **Value**: Your deployed backend URL (e.g. `https://your-cabo-backend.onrender.com`)
-6. Click **Deploy**. Vercel gives you an instant global HTTPS URL (e.g. `https://cabo-online.vercel.app`).
+7. Click **Deploy**. Vercel provides your frontend HTTPS URL.
 
 > **💡 In-Game Server Switcher:** Players can also enter or switch the backend server URL directly on the lobby screen by clicking the **Server** button.
 
@@ -118,27 +117,16 @@ The `frontend/` directory is built with **React + Vite** and is pre-configured w
 
 Because Vercel serverless functions do not maintain long-lived WebSocket connections, host the lightweight Node server on any of the following platforms:
 
-### Option A: Render (Free & Easiest)
-1. Go to [Render.com](https://render.com) and click **New + > Web Service**.
-2. Connect your GitHub repository.
+1. Push the repository to GitHub.
+2. In [Render](https://render.com), choose **New + > Web Service**, then connect the repository.
 3. Configure the service:
    - **Root Directory**: `backend`
-   - **Runtime**: `Node`
+   - **Language**: `Node`
    - **Build Command**: `npm install`
    - **Start Command**: `npm start`
-4. Click **Create Web Service**. Render provides a free HTTPS/WSS URL (e.g. `https://cabo-backend.onrender.com`).
-5. Set this URL as `VITE_BACKEND_URL` in your Vercel project settings.
+4. Create the service. Once it deploys, open `https://YOUR-SERVICE.onrender.com/health`; it should show `ok`. Copy the service URL (no `/health`).
+5. In Vercel, open the project’s **Settings > Environment Variables** and set `VITE_BACKEND_URL` to the Render URL, for example `https://your-cabo-backend.onrender.com`.
+6. Redeploy the Vercel project so the frontend build picks up the environment variable.
+7. Open the Vercel site and create a room to confirm the Socket.IO connection works.
 
-### Option B: Railway
-1. In [Railway.app](https://railway.app), click **New Project > Deploy from GitHub repo**.
-2. Set root directory to `backend`.
-3. Under **Settings > Networking**, click **Generate Domain**.
-4. Set this URL as `VITE_BACKEND_URL` on Vercel.
-
-### Option C: Docker (Fly.io / VPS / Cloud Run)
-Use the included `backend/Dockerfile`:
-```bash
-cd backend
-docker build -t cabo-backend .
-docker run -d -p 3000:3000 cabo-backend
-```
+The backend stores rooms in memory, so active rooms are lost if Render restarts or sleeps the service. Players also need the same backend service URL to join the same rooms.

@@ -1,0 +1,15 @@
+{
+  "name": "cabo-game",
+  "version": "1.0.0",
+  "description": "CABO card game - Separate frontend and backend",
+  "scripts": {
+    "dev": "npm --prefix backend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build:frontend": "npm --prefix frontend run build",
+    "test:backend": "npm --prefix backend test",
+    "test": "npm --prefix backend test",
+    "start": "npm --prefix backend start",
+    "build": "npm --prefix frontend run build"
+  }
+}
