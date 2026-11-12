@@ -541,16 +541,6 @@ export default function App() {
           <button className="btn-ghost" onClick={toggleSound} title="Sound">
             {soundEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
           </button>
-          {roomState.hostId === roomState.you && roomState.phase === 'playing' && (
-            <button
-              className="btn-ghost"
-              onClick={() => {
-                if (window.confirm('Skip the current player turn?')) handleAct('skipPlayer');
-              }}
-            >
-              Skip Turn
-            </button>
-          )}
           <button className="btn-ghost" onClick={handleLeaveRoom} title="Leave Game">
             <LogOut size={16} /> Leave
           </button>

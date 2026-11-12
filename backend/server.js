@@ -521,15 +521,6 @@ function handleAct(room, p, m) {
       animBroadcast(room, { type: 'give', actorId: p.id, actorName: p.name, targetId: target.id, cardIdx: idx });
       return null;
     }
-    case 'skipPlayer': {
-      if (room.hostId !== p.id) return 'Only the host can skip a player';
-      if (t.phase === 'final') { endRound(room); return null; }
-      if (t.drawn) { room.discard.push(t.drawn); t.drawn = null; }
-      room.pendingGive = null;
-      log(room, 'The host skipped a turn.');
-      advance(room);
-      return null;
-    }
   }
   return 'Unknown action';
 }
