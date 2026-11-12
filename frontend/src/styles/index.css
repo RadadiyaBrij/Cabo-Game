@@ -769,10 +769,12 @@ button, input, select, textarea {
 
 /* Seat Hand Grid */
 .seat-hand-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  grid-auto-rows: max-content;
   gap: 4px;
-  align-items: center;
+  justify-content: start;
+  align-items: start;
 }
 
 /* Turn each hand toward the player sitting at that edge of the table. */

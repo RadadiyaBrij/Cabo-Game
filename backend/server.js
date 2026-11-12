@@ -91,10 +91,17 @@ function findCard(room, id) {
   }
   return null;
 }
+function firstFreeCardSlot(player) {
+  const occupied = new Set(player.cards.map((card) => card.slot).filter(Number.isInteger));
+  let slot = 0;
+  while (occupied.has(slot)) slot++;
+  return slot;
+}
 function swapCards(a, b) {
   const ca = a.card, cb = b.card;
-  a.owner.cards[a.idx] = cb;
-  b.owner.cards[b.idx] = ca;
+  // The cards exchange hands, but each table position stays fixed.
+  a.owner.cards[a.idx] = { ...cb, slot: ca.slot };
+  b.owner.cards[b.idx] = { ...ca, slot: cb.slot };
 }
 function drawFromDeck(room) {
   if (room.deck.length === 0) {
@@ -165,7 +172,7 @@ function startRound(room) {
   room.initialPeekUntil = Date.now() + 10000;
   for (const p of room.players) {
     p.cards = [];
-    for (let i = 0; i < 4; i++) p.cards.push(room.deck.pop());
+    for (let i = 0; i < 4; i++) p.cards.push({ ...room.deck.pop(), slot: i });
   }
   const first = room.players[(room.round - 1) % room.players.length];
   room.turn = { playerId: first.id, phase: 'draw', drawn: null, power: null, stage: 0 };
@@ -232,7 +239,7 @@ function stateFor(room, viewer) {
       total: p.total,
       wins: p.wins,
       score: over ? total(p) : null,
-      cards: p.cards.map((c) => (over ? { ...c } : { id: c.id })),
+      cards: p.cards.map((c) => (over ? { ...c } : { id: c.id, slot: c.slot })),
     })),
     turn: t && {
       playerId: t.playerId,
@@ -269,7 +276,7 @@ function animBroadcast(room, payload) {
 /* ------------------------------ game actions ----------------------------- */
 function penalty(room, p, why) {
   const c = drawFromDeck(room);
-  if (c) p.cards.push(c);
+  if (c) p.cards.push({ ...c, slot: firstFreeCardSlot(p) });
   log(room, `${p.name} ${why} and takes a penalty card.`);
 }
 
@@ -441,6 +448,7 @@ function handleAct(room, p, m) {
       const f = findCard(room, m.cardId);
       if (!f || f.owner !== p) return 'Pick one of your own cards';
       const old = f.card;
+      t.drawn.slot = old.slot;
       p.cards[f.idx] = t.drawn;
       room.discard.push(old);
       room.opp = { state: 'open', value: old.value };
@@ -515,7 +523,8 @@ function handleAct(room, p, m) {
       const idx = p.cards.findIndex((c) => c.id === m.cardId);
       const target = room.players.find((x) => x.id === g.to);
       if (idx < 0 || !target) return 'Pick one of your own cards';
-      target.cards.push(p.cards.splice(idx, 1)[0]);
+      const [givenCard] = p.cards.splice(idx, 1);
+      target.cards.push({ ...givenCard, slot: firstFreeCardSlot(target) });
       room.pendingGive = null;
       log(room, `${p.name} gave a card to ${target.name}.`);
       animBroadcast(room, { type: 'give', actorId: p.id, actorName: p.name, targetId: target.id, cardIdx: idx });

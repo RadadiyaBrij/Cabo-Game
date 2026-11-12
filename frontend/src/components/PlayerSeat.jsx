@@ -61,17 +61,17 @@ export default function PlayerSeat({
   registerSeatRef,
 }) {
   const cards = player.cards || [];
-  // Keep a card's visual slot for its lifetime, even when cards before it leave.
-  // New cards (including penalties) use the first slot that is currently free.
+  // Server-owned slot positions keep replacement cards in the exact position
+  // of the card they replace, while cards removed from a hand leave a gap.
   const slotByCardId = useRef({});
   const occupiedSlots = new Set();
   cards.forEach((card) => {
-    const slot = slotByCardId.current[card.id];
+    const slot = Number.isInteger(card.slot) ? card.slot : slotByCardId.current[card.id];
     if (Number.isInteger(slot)) occupiedSlots.add(slot);
   });
   let nextSlot = 0;
   const positionedCards = cards.map((card, idx) => {
-    let slot = slotByCardId.current[card.id];
+    let slot = Number.isInteger(card.slot) ? card.slot : slotByCardId.current[card.id];
     if (!Number.isInteger(slot)) {
       while (occupiedSlots.has(nextSlot)) nextSlot += 1;
       slot = nextSlot;
@@ -81,8 +81,6 @@ export default function PlayerSeat({
     }
     return { card, idx, slot };
   });
-  const topRow = positionedCards.filter(({ slot }) => slot % 4 < 2);
-  const botRow = positionedCards.filter(({ slot }) => slot % 4 >= 2);
 
   const seatRef = useRef(null);
 
@@ -123,7 +121,7 @@ export default function PlayerSeat({
         myPlayerId,
       });
 
-  const renderCard = (c, idx) => {
+  const renderCard = (c, idx, slot) => {
     // Check if this card is one of the 2 bottom cards during initial memorization
     const isMemorizeCard = isMe && initialPeekSecondsLeft > 0 && (idx === 2 || idx === 3);
     const hl = actionHighlights[c.id] || (isMemorizeCard ? { type: 'memorize', label: '🧠 MEMORIZE' } : null);
@@ -135,6 +133,7 @@ export default function PlayerSeat({
           if (registerCardRef && el) registerCardRef(player.id, idx, c.id, el);
         }}
         className={`seat-card-slot ${hl ? `slot-${hl.type}` : ''}`}
+        style={{ gridColumn: (slot % 2) + 1, gridRow: Math.floor(slot / 2) + 1 }}
       >
         <Card
           card={c}
@@ -188,14 +187,9 @@ export default function PlayerSeat({
         {!player.connected && <span className="seat-offline-tag">Offline</span>}
       </div>
 
-      {/* Cards 2-row layout (strictly 2 rows tall, expands horizontally to prevent vertical table overlap) */}
+      {/* Fixed 2-column slots keep each card in place when neighboring cards leave. */}
       <div className="seat-hand-grid">
-        <div className="seat-row top">
-          {topRow.map(({ card, idx }) => renderCard(card, idx))}
-        </div>
-        <div className="seat-row bottom">
-          {botRow.map(({ card, idx }) => renderCard(card, idx))}
-        </div>
+        {positionedCards.map(({ card, idx, slot }) => renderCard(card, idx, slot))}
       </div>
 
       {/* Round score if over */}
