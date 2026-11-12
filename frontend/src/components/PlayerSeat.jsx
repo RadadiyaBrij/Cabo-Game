@@ -121,7 +121,7 @@ export default function PlayerSeat({
         myPlayerId,
       });
 
-  const renderCard = (c, idx, slot) => {
+  const renderCard = (c, idx, slot = null) => {
     // Check if this card is one of the 2 bottom cards during initial memorization
     const isMemorizeCard = isMe && initialPeekSecondsLeft > 0 && (idx === 2 || idx === 3);
     const hl = actionHighlights[c.id] || (isMemorizeCard ? { type: 'memorize', label: '🧠 MEMORIZE' } : null);
@@ -133,7 +133,11 @@ export default function PlayerSeat({
           if (registerCardRef && el) registerCardRef(player.id, idx, c.id, el);
         }}
         className={`seat-card-slot ${hl ? `slot-${hl.type}` : ''}`}
-        style={{ gridColumn: (slot % 2) + 1, gridRow: Math.floor(slot / 2) + 1 }}
+        style={Number.isInteger(slot)
+          ? slot >= 100
+            ? { gridColumn: 3 + Math.floor((slot - 100) / 2), gridRow: ((slot - 100) % 2) + 1 }
+            : { gridColumn: (slot % 2) + 1, gridRow: Math.floor(slot / 2) + 1 }
+          : undefined}
       >
         <Card
           card={c}
@@ -187,7 +191,7 @@ export default function PlayerSeat({
         {!player.connected && <span className="seat-offline-tag">Offline</span>}
       </div>
 
-      {/* Fixed 2-column slots keep each card in place when neighboring cards leave. */}
+      {/* One fixed two-column grid for regular and penalty cards. */}
       <div className="seat-hand-grid">
         {positionedCards.map(({ card, idx, slot }) => renderCard(card, idx, slot))}
       </div>

@@ -108,6 +108,8 @@ export default function Card({
         draggable={false}
       />
 
+      {card?.penalty && !isFaceUp && <span className="penalty-card-mark">P</span>}
+
       {/* Special Cabo Point Badges for Kings */}
       {isBlackKing && <span className="special-badge-cabo-blackking">13</span>}
 

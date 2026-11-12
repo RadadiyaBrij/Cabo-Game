@@ -97,11 +97,17 @@ function firstFreeCardSlot(player) {
   while (occupied.has(slot)) slot++;
   return slot;
 }
+function firstFreePenaltySlot(player) {
+  const used = new Set(player.cards.filter((card) => card.penalty).map((card) => card.slot - 100));
+  let slot = 0;
+  while (used.has(slot)) slot++;
+  return 100 + slot;
+}
 function swapCards(a, b) {
   const ca = a.card, cb = b.card;
-  // The cards exchange hands, but each table position stays fixed.
-  a.owner.cards[a.idx] = { ...cb, slot: ca.slot };
-  b.owner.cards[b.idx] = { ...ca, slot: cb.slot };
+  // Cards exchange hands, but the destination's position and penalty lane stay fixed.
+  a.owner.cards[a.idx] = { ...cb, slot: ca.slot, penalty: ca.penalty };
+  b.owner.cards[b.idx] = { ...ca, slot: cb.slot, penalty: cb.penalty };
 }
 function drawFromDeck(room) {
   if (room.deck.length === 0) {
@@ -239,7 +245,7 @@ function stateFor(room, viewer) {
       total: p.total,
       wins: p.wins,
       score: over ? total(p) : null,
-      cards: p.cards.map((c) => (over ? { ...c } : { id: c.id, slot: c.slot })),
+      cards: p.cards.map((c) => (over ? { ...c } : { id: c.id, slot: c.slot, penalty: Boolean(c.penalty) })),
     })),
     turn: t && {
       playerId: t.playerId,
@@ -276,7 +282,7 @@ function animBroadcast(room, payload) {
 /* ------------------------------ game actions ----------------------------- */
 function penalty(room, p, why) {
   const c = drawFromDeck(room);
-  if (c) p.cards.push({ ...c, slot: firstFreeCardSlot(p) });
+  if (c) p.cards.push({ ...c, slot: firstFreePenaltySlot(p), penalty: true });
   log(room, `${p.name} ${why} and takes a penalty card.`);
 }
 
@@ -449,13 +455,14 @@ function handleAct(room, p, m) {
       if (!f || f.owner !== p) return 'Pick one of your own cards';
       const old = f.card;
       t.drawn.slot = old.slot;
+      t.drawn.penalty = old.penalty;
       p.cards[f.idx] = t.drawn;
       room.discard.push(old);
       room.opp = { state: 'open', value: old.value };
       t.drawn = null;
       t.phase = 'end';
       log(room, `${p.name} put the drawn card in their hand and discarded ${cname(old)}.`);
-      animBroadcast(room, { type: 'replace', actorId: p.id, actorName: p.name, cardIdx: f.idx });
+      animBroadcast(room, { type: 'replace', actorId: p.id, actorName: p.name, cardIdx: f.idx, cardId: p.cards[f.idx].id });
       return null;
     }
     case 'discard': {

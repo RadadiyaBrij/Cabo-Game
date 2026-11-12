@@ -549,6 +549,29 @@ button, input, select, textarea {
   pointer-events: auto;
 }
 
+.table-action-notice {
+  position: absolute;
+  bottom: calc(100% + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(6, 35, 29, 0.88);
+  color: #f8fafc;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.35);
+  animation: action-notice-in 0.18s ease-out;
+}
+
+@keyframes action-notice-in {
+  from { opacity: 0; transform: translate(-50%, 5px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
 .table-piles-row {
   display: flex;
   align-items: center;
@@ -770,11 +793,31 @@ button, input, select, textarea {
 /* Seat Hand Grid */
 .seat-hand-grid {
   display: grid;
-  grid-template-columns: repeat(2, max-content);
-  grid-auto-rows: max-content;
+  grid-template-columns: repeat(2, max-content) max-content;
+  grid-template-rows: repeat(2, max-content);
+  grid-auto-columns: max-content;
   gap: 4px;
   justify-content: start;
   align-items: start;
+}
+
+.penalty-card-mark {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  z-index: 8;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 2px;
+  border-radius: 3px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 9px;
+  font-weight: 1000;
+  line-height: 13px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
 }
 
 /* Turn each hand toward the player sitting at that edge of the table. */
@@ -907,9 +950,10 @@ button, input, select, textarea {
 
 /* Replace Highlight */
 .action-highlight-replace {
-  outline: 3px solid #0284c7 !important;
-  box-shadow: 0 0 26px rgba(2, 132, 199, 0.9) !important;
-  animation: card-replace-glow 1.5s ease-out forwards !important;
+  outline: 3px solid #38bdf8 !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.95), 0 0 12px rgba(14, 165, 233, 0.85) !important;
+  animation: card-replace-glow 1.5s ease-out 2 !important;
 }
 
 /* Memorize Highlight on the 2 bottom cards at round start */

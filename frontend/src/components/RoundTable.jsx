@@ -41,6 +41,7 @@ export default function RoundTable({
   // Active highlights on specific cards: { [cardId]: { type, label } }
   const [actionHighlights, setActionHighlights] = useState({});
   const [drawPileFlashing, setDrawPileFlashing] = useState(false);
+  const [actionNotice, setActionNotice] = useState('');
 
   // Register DOM refs
   const registerSeatRef = (playerId, el) => {
@@ -108,6 +109,12 @@ export default function RoundTable({
     const latest = animEvents[animEvents.length - 1];
     if (!latest || latest._handled) return;
     latest._handled = true;
+
+    if (latest.type === 'replace' || latest.type === 'discard') {
+      const verb = latest.type === 'replace' ? 'replaced a card' : 'discarded a card';
+      setActionNotice(`${latest.actorName || 'A player'} ${verb}`);
+      setTimeout(() => setActionNotice(''), 4000);
+    }
 
     // 1. Draw action
     if (latest.type === 'draw') {
@@ -222,7 +229,7 @@ export default function RoundTable({
 
     // 7. Replace action
     if (latest.type === 'replace') {
-      const targetCardId = getCardIdAt(latest.actorId, latest.cardIdx != null ? latest.cardIdx : 0);
+      const targetCardId = latest.cardId || getCardIdAt(latest.actorId, latest.cardIdx != null ? latest.cardIdx : 0);
       if (targetCardId) {
         setActionHighlights((prev) => ({
           ...prev,
@@ -234,7 +241,7 @@ export default function RoundTable({
             delete next[targetCardId];
             return next;
           });
-        }, 1600);
+        }, 4000);
       }
     }
   }, [animEvents, players]);
@@ -252,6 +259,7 @@ export default function RoundTable({
 
           {/* Center Table Area (Piles & Notifications) */}
           <div className="table-center-hub">
+            {actionNotice && <div className="table-action-notice">{actionNotice}</div>}
             {/* CABO Notification Banner in center */}
             {caboCaller && (
               <div className="table-center-cabo-banner">
