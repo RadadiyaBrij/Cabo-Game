@@ -85,7 +85,7 @@ export default function InspectCardModal({
             const svgSrc = getCardSvg(c.rank, c.suit);
             const power = powerForRank(c.rank);
             const ptBadge = getCardPointsBadge(c);
-            const slotName = i === 0 ? 'CARD 1 · BOTTOM-LEFT' : 'CARD 2 · BOTTOM-RIGHT';
+            const slotName = c.ownerName || (i === 0 ? 'CARD 1' : 'CARD 2');
 
             return (
               <div key={c.id || i} className="inspect-card-column">

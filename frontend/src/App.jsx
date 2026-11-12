@@ -486,7 +486,10 @@ export default function App() {
       (cid) => (peekUntil[cid] || 0) > now && knownCards[cid]
     );
     if (activePeekIds.length > 1 && !isReplacing) {
-      heldCards = activePeekIds.map((cid) => knownCards[cid]);
+      heldCards = activePeekIds.map((cid) => {
+        const owner = roomState.players.find((player) => player.cards.some((ownedCard) => ownedCard.id === cid));
+        return { ...knownCards[cid], ownerName: owner?.name || 'Player' };
+      });
       heldLabel = '👑 KING PEEK (BOTH CARDS)';
       heldSeconds = Math.max(0, Math.ceil((Math.max(...activePeekIds.map((cid) => peekUntil[cid] || 0)) - now) / 1000));
       onPutDownHeld = () => {
